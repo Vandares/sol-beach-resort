@@ -1,0 +1,19 @@
+# dependencies and build output
+node_modules/
+dist/
+.astro/
+.vercel/
+
+# Source archive: 464 MB of client PDFs and full-page renders. Everything the
+# site builds from is already committed under src/assets/img and public/.
+# Keep this folder backed up outside git.
+brand-assets/
+
+# local env
+.env
+.env.*
+!.env.example
+
+# Internal research and decisions. Holds membership pricing that must not
+# be published. Remove this line if the repo is private.
+PROJECT-BRIEF.md

@@ -1,0 +1,98 @@
+---
+import Hero from "./Hero.astro";
+import About from "./About.astro";
+import Manifesto from "./Manifesto.astro";
+import Beliefs from "./Beliefs.astro";
+import Facilities from "./Facilities.astro";
+import NightShift from "./NightShift.astro";
+import Descent from "./Descent.astro";
+import Units from "./Units.astro";
+import Reviews from "./Reviews.astro";
+import Membership from "./Membership.astro";
+import Visit from "./Visit.astro";
+import type { Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+---
+
+<Hero locale={locale} />
+<About locale={locale} />
+<Manifesto locale={locale} />
+<Beliefs locale={locale} />
+<Facilities locale={locale} />
+<NightShift locale={locale} />
+<Units locale={locale} />
+<Reviews locale={locale} />
+<Membership locale={locale} />
+<Descent locale={locale} />
+<Visit locale={locale} />
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = document.documentElement.classList.contains("reduce-motion");
+  const items = Array.from(document.querySelectorAll<HTMLElement>(".js-reveal"));
+
+  if (!reduce && items.length) {
+    // Content arrives as the reader reaches it. IntersectionObserver plus a
+    // CSS transition, so no ticker is involved and nothing can stay stuck.
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        // Stagger only within a batch that entered together, so a grid of
+        // tiles cascades but a lone paragraph does not wait.
+        const arrived = entries.filter((e) => e.isIntersecting);
+        arrived.forEach((e, i) => {
+          const el = e.target as HTMLElement;
+          el.style.setProperty("--reveal-delay", `${i * 80}ms`);
+          el.classList.add("is-in");
+          obs.unobserve(el);
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.05 },
+    );
+    items.forEach((el) => io.observe(el));
+  }
+
+  // Images settle late and change section heights, which moves every pin.
+  window.addEventListener("load", () => ScrollTrigger.refresh());
+
+  // Scroll companion. Position maps to how far down the page you are, and it
+  // turns to face the direction of travel.
+  const car = document.querySelector<HTMLElement>("[data-car]");
+  if (car && !reduce) {
+    // Park it clear of the fixed header, and stop short of the bottom edge.
+    const topGap = 96;
+    const botGap = 32;
+    const travel = () =>
+      Math.max(0, window.innerHeight - car.offsetHeight - topGap - botGap);
+
+    gsap.set(car, { y: topGap, rotation: 180, opacity: 0.95 });
+
+    let facing = 180;
+    gsap.to(car, {
+      y: () => topGap + travel(),
+      ease: "none",
+      scrollTrigger: {
+        start: 0,
+        end: () => ScrollTrigger.maxScroll(window),
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const want = self.direction === -1 ? 0 : 180;
+          if (want !== facing) {
+            facing = want;
+            gsap.to(car, {
+              rotation: want,
+              duration: 0.5,
+              ease: "power2.inOut",
+              overwrite: "auto",
+            });
+          }
+        },
+      },
+    });
+  }
+</script>

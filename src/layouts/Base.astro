@@ -1,0 +1,291 @@
+---
+import "../styles/global.css";
+import { Image } from "astro:assets";
+import logo from "../assets/img/logo-sol.png";
+import logoWhite from "../assets/img/logo-sol-white.png";
+import { t, path, CONTACT, type Locale } from "../data/content";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = t(locale);
+const other: Locale = locale === "en" ? "ar" : "en";
+
+const site = Astro.site?.toString().replace(/\/$/, "") ?? "";
+const canonical = site + path(locale);
+
+const nav = [
+  { href: "#about", label: c.nav.about },
+  { href: "#facilities", label: c.nav.facilities },
+  { href: "#membership", label: c.nav.membership },
+  { href: "#visit", label: c.nav.contact },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Resort",
+  name: locale === "ar" ? "منتجع سول" : "SOL Beach Resort",
+  url: canonical,
+  telephone: CONTACT.phoneDisplay,
+  email: CONTACT.email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "6998 Prince Abdullah Al Faisal Street, Abhur Ash Shamaliyah District",
+    addressLocality: "Jeddah",
+    postalCode: "23812",
+    addressCountry: "SA",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: CONTACT.rating,
+    reviewCount: CONTACT.reviewCount.replace(",", ""),
+  },
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    opens: "08:00",
+    closes: "23:30",
+  },
+  sameAs: [CONTACT.instagram, CONTACT.tiktok],
+};
+---
+
+<!doctype html>
+<html lang={c.htmlLang} dir={c.dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{c.meta.title}</title>
+    <meta name="description" content={c.meta.description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={site + path("en")} />
+    <link rel="alternate" hreflang="ar" href={site + path("ar")} />
+    <link rel="alternate" hreflang="x-default" href={site + path("en")} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={c.meta.title} />
+    <meta property="og:description" content={c.meta.description} />
+    <meta property="og:locale" content={locale === "ar" ? "ar_SA" : "en_US"} />
+    <meta name="theme-color" content="#faf8f4" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline set:html={JSON.stringify(jsonLd)} type="application/ld+json" />
+    <script is:inline>
+      // Set before paint so reveal styles never flash on no-JS or reduced motion.
+      document.documentElement.classList.add("has-js");
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("reduce-motion");
+      }
+    </script>
+  </head>
+
+  <body class="grain">
+    <a href="#main" class="btn btn--solid sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-[70]">
+      {c.skip}
+    </a>
+
+    <span data-top-sentinel aria-hidden="true" class="absolute inset-x-0 top-0 block h-24"></span>
+
+    <header
+      id="siteHeader"
+      class="fixed inset-x-0 top-0 z-50 h-16 md:h-[72px]"
+      data-header
+    >
+      <div class="shell flex h-full items-center justify-between gap-6">
+        <a href={path(locale)} class="shrink-0" aria-label="SOL Beach Resort">
+          <Image src={logo} alt="SOL Beach Resort" width={132} densities={[1, 2]}
+            class="h-8 w-auto md:h-9 [--o:1] opacity-(--o) transition-opacity duration-500" data-logo-dark />
+          <Image src={logoWhite} alt="" aria-hidden="true" width={132} densities={[1, 2]}
+            class="-mt-8 h-8 w-auto md:-mt-9 md:h-9 opacity-0 transition-opacity duration-500" data-logo-light />
+        </a>
+
+        <nav class="hidden items-center gap-7 lg:flex" aria-label={c.nav.about}>
+          {nav.map((n) => (
+            <a href={n.href} class="text-[0.9rem] font-medium tracking-[0.01em] transition-opacity hover:opacity-60">
+              {n.label}
+            </a>
+          ))}
+          <a
+            href={CONTACT.menu}
+            target="_blank"
+            rel="noopener"
+            class="text-[0.9rem] font-medium tracking-[0.01em] transition-opacity hover:opacity-60"
+          >
+            {c.nav.menu} <span aria-hidden="true" class="inline-block rtl:-scale-x-100">&#8599;</span>
+          </a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a
+            href={path(other)}
+            hreflang={other}
+            class="hidden text-[0.85rem] font-medium tracking-[0.02em] transition-opacity hover:opacity-60 sm:inline"
+          >
+            {c.langSwitch}
+          </a>
+          <a href="#membership" class="btn btn--solid hidden !px-5 !py-2.5 !text-[0.85rem] md:inline-flex">
+            {c.hero.primary}
+          </a>
+          <button
+            type="button"
+            data-menu-toggle
+            aria-expanded="false"
+            aria-controls="mobileNav"
+            class="grid h-10 w-10 place-items-center lg:hidden"
+          >
+            <span class="sr-only">{c.nav.about}</span>
+            <span class="relative block h-[9px] w-5">
+              <span class="absolute inset-x-0 top-0 h-px bg-current transition-transform duration-300" data-bar-1></span>
+              <span class="absolute inset-x-0 bottom-0 h-px bg-current transition-transform duration-300" data-bar-2></span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div
+      id="mobileNav"
+      hidden
+      class="fixed inset-0 z-40 flex flex-col justify-center gap-1 bg-paper px-(--edge) lg:hidden"
+    >
+      {nav.map((n) => (
+        <a href={n.href} data-mobile-link class="border-b border-espresso/10 py-5 text-2xl font-light">
+          {n.label}
+        </a>
+      ))}
+      <a href={CONTACT.menu} target="_blank" rel="noopener" class="border-b border-espresso/10 py-5 text-2xl font-light">
+        {c.nav.menu} <span aria-hidden="true" class="inline-block rtl:-scale-x-100">&#8599;</span>
+      </a>
+      <a href={path(other)} hreflang={other} class="py-5 text-2xl font-light">{c.langSwitch}</a>
+      <a href="#membership" data-mobile-link class="btn btn--solid mt-6 w-full">{c.hero.primary}</a>
+    </div>
+
+    <!--
+      Scroll companion. It travels the edge of the viewport in step with how
+      far down the page you are, so it doubles as a progress indicator, and it
+      turns to face whichever way you are scrolling. Decorative, so it is
+      hidden from assistive tech and never intercepts a pointer.
+    -->
+    <div
+      data-car
+      aria-hidden="true"
+      class="pointer-events-none fixed start-3 top-0 z-40 hidden w-11 opacity-0 xl:block"
+    >
+      <span class="car-glow car-glow--front"></span>
+      <span class="car-glow car-glow--rear"></span>
+      <img
+        src="/car.png"
+        alt=""
+        width="200"
+        height="462"
+        decoding="async"
+        class="relative z-[1] block h-auto w-full drop-shadow-[0_12px_20px_rgba(20,14,10,0.38)]"
+      />
+    </div>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="relative overflow-hidden bg-night text-paper">
+      <div class="shell grid gap-12 py-20 md:grid-cols-[1.4fr_1fr_1fr] md:py-24">
+        <div>
+          <Image src={logoWhite} alt="SOL Beach Resort" width={150} densities={[1, 2]} class="h-11 w-auto" />
+          <p class="mt-6 max-w-[34ch] text-[0.95rem] font-light leading-relaxed text-paper/60">
+            {c.footer.tagline}
+          </p>
+        </div>
+
+        <div class="text-[0.95rem] leading-relaxed">
+          <p class="text-paper/60">{c.visit.contactLabel}</p>
+          <a href={`mailto:${CONTACT.email}`} class="mt-3 block transition-colors hover:text-gold">{CONTACT.email}</a>
+          <a href={`tel:${CONTACT.phoneHref}`} class="mt-1 block transition-colors hover:text-gold" dir="ltr">
+            {CONTACT.phoneDisplay}
+          </a>
+          <p class="mt-5 text-paper/60">{c.visit.hoursLabel}</p>
+          <p class="mt-3 text-paper/80">{c.visit.hours}</p>
+        </div>
+
+        <div class="text-[0.95rem] leading-relaxed">
+          <p class="text-paper/60">{c.footer.follow}</p>
+          <a href={CONTACT.instagram} target="_blank" rel="noopener" class="mt-3 block transition-colors hover:text-gold">Instagram</a>
+          <a href={CONTACT.tiktok} target="_blank" rel="noopener" class="mt-1 block transition-colors hover:text-gold">TikTok</a>
+          <a href={CONTACT.azul} target="_blank" rel="noopener" class="mt-5 block text-paper/60 transition-colors hover:text-gold">
+            Azul Diving Club <span aria-hidden="true" class="inline-block rtl:-scale-x-100">&#8599;</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="shell flex flex-col gap-2 border-t border-paper/10 py-7 text-[0.8rem] text-paper/60 sm:flex-row sm:items-center sm:justify-between">
+        <p>&copy; 2026 SOL Beach Resort. {c.footer.rights}</p>
+        <p>{c.footer.powered}</p>
+      </div>
+    </footer>
+
+    <script>
+      const btn = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+      const panel = document.getElementById("mobileNav");
+      const b1 = document.querySelector<HTMLElement>("[data-bar-1]");
+      const b2 = document.querySelector<HTMLElement>("[data-bar-2]");
+
+      function setMenu(open: boolean) {
+        if (!btn || !panel) return;
+        panel.hidden = !open;
+        btn.setAttribute("aria-expanded", String(open));
+        document.body.style.overflow = open ? "hidden" : "";
+        if (b1) b1.style.transform = open ? "translateY(4px) rotate(45deg)" : "";
+        if (b2) b2.style.transform = open ? "translateY(-4px) rotate(-45deg)" : "";
+      }
+
+      btn?.addEventListener("click", () => setMenu(panel?.hidden ?? true));
+      panel?.querySelectorAll("[data-mobile-link]").forEach((a) =>
+        a.addEventListener("click", () => setMenu(false)),
+      );
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && panel && !panel.hidden) setMenu(false);
+      });
+
+      // Header inverts to light type while a dark ground sits behind it.
+      const header = document.querySelector<HTMLElement>("[data-header]");
+      const whiteMark = document.querySelector<HTMLElement>("[data-logo-light]");
+      const darkMark = document.querySelector<HTMLElement>("[data-logo-dark]");
+
+      function paintHeader(onDark: boolean) {
+        if (!header) return;
+        header.classList.toggle("text-paper", onDark);
+        if (whiteMark) whiteMark.style.opacity = onDark ? "1" : "0";
+        if (darkMark) darkMark.style.setProperty("--o", onDark ? "0" : "1");
+        const cta = header.querySelector(".btn--solid");
+        cta?.classList.toggle("!bg-paper", onDark);
+        cta?.classList.toggle("!text-espresso", onDark);
+      }
+
+      // The Azul descent animates its own background, so it drives the header
+      // directly rather than being observed as a fixed dark zone.
+      (window as any).__solHeader = paintHeader;
+
+      // Give the header a ground as soon as the page leaves the very top, so
+      // content stops running through the navigation.
+      const sentinel = document.querySelector("[data-top-sentinel]");
+      if (header && sentinel) {
+        new IntersectionObserver(
+          ([e]) => header.classList.toggle("is-stuck", !e!.isIntersecting),
+          { threshold: 0 },
+        ).observe(sentinel);
+      }
+
+      const zones = document.querySelectorAll<HTMLElement>("[data-dark-zone]");
+      if (header && zones.length) {
+        const io = new IntersectionObserver(
+          (entries) =>
+            paintHeader(
+              entries.some(
+                (e) => e.isIntersecting && e.boundingClientRect.top <= 72 && e.boundingClientRect.bottom > 72,
+              ),
+            ),
+          { rootMargin: "-72px 0px -100% 0px", threshold: 0 },
+        );
+        zones.forEach((z) => io.observe(z));
+      }
+    </script>
+  </body>
+</html>

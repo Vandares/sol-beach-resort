@@ -1,0 +1,52 @@
+---
+import { t, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+
+// Split on words so the line can be revealed in reading order.
+const words = c.manifesto.line.split(" ");
+---
+
+<section class="relative overflow-hidden bg-paper-2 py-32 md:py-48">
+  <span class="palm palm--tr" aria-hidden="true"></span>
+
+  <div class="shell relative">
+    <blockquote
+      class="max-w-[19ch] text-[clamp(2.1rem,6.2vw,4.75rem)] font-extralight leading-[1.1] tracking-[-0.03em]"
+      data-manifesto
+    >
+      {words.map((w, i) => (
+        <span class="inline-block overflow-hidden align-bottom pb-[0.08em]">
+          <span class="inline-block" data-word style={`--d:${i * 45}ms`}>{w}&nbsp;</span>
+        </span>
+      ))}
+    </blockquote>
+
+    <p class="lockup__alt mt-9 max-w-[46ch]" dir={locale === "en" ? "rtl" : "ltr"}>
+      {c.manifesto.attribution}
+    </p>
+  </div>
+</section>
+
+<script>
+  const block = document.querySelector<HTMLElement>("[data-manifesto]");
+  const reduce = document.documentElement.classList.contains("reduce-motion");
+
+  if (block && !reduce) {
+    // Word by word. This line is the brand thesis, so it earns a reveal that
+    // makes the reader take it one word at a time.
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          block.classList.add("is-in");
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -22% 0px", threshold: 0.15 },
+    );
+    io.observe(block);
+  }
+</script>

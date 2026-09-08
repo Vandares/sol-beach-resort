@@ -1,0 +1,61 @@
+---
+import { Image } from "astro:assets";
+import shore from "../assets/img/azul-beachfront.jpg";
+import { t, CONTACT, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+---
+
+<section id="visit" data-dark-zone class="bg-night py-28 text-paper md:py-36">
+  <div class="shell grid gap-14 lg:grid-cols-12 lg:gap-20">
+    <div class="lg:col-span-5">
+      <h2 class="text-[clamp(2rem,4.6vw,3.5rem)] font-light leading-[1.06] tracking-[-0.025em]">
+        {c.visit.title}
+      </h2>
+      <p class="lockup__alt mt-2 text-paper">{c.visit.alt}</p>
+      <span class="lockup__rule"></span>
+
+      <dl class="mt-10">
+        <div class="border-t border-paper/12 py-6">
+          <dt class="text-[0.8rem] tracking-[0.02em] text-paper/60">{c.visit.addressLabel}</dt>
+          <dd class="mt-3 max-w-[38ch] text-[1rem] font-light leading-relaxed">{c.visit.address}</dd>
+          <dd class="mt-3 text-[0.85rem] text-paper/60" dir="ltr">{CONTACT.plusCode}</dd>
+        </div>
+        <div class="border-t border-paper/12 py-6">
+          <dt class="text-[0.8rem] tracking-[0.02em] text-paper/60">{c.visit.hoursLabel}</dt>
+          <dd class="mt-3 text-[1rem] font-light">{c.visit.hours}</dd>
+        </div>
+        <div class="border-t border-b border-paper/12 py-6">
+          <dt class="text-[0.8rem] tracking-[0.02em] text-paper/60">{c.visit.contactLabel}</dt>
+          <dd class="mt-3">
+            <a href={`mailto:${CONTACT.email}`} class="text-[1rem] font-light transition-colors hover:text-gold">
+              {CONTACT.email}
+            </a>
+          </dd>
+          <dd class="mt-1">
+            <a href={`tel:${CONTACT.phoneHref}`} dir="ltr" class="text-[1rem] font-light transition-colors hover:text-gold">
+              {CONTACT.phoneDisplay}
+            </a>
+          </dd>
+        </div>
+      </dl>
+
+      <a href={CONTACT.maps} target="_blank" rel="noopener" class="btn btn--ghost mt-9">
+        {c.visit.directions}
+        <span aria-hidden="true" class="inline-block rtl:-scale-x-100">&#8599;</span>
+      </a>
+    </div>
+
+    <div class="js-reveal lg:col-span-6 lg:col-start-7">
+      <Image
+        src={shore}
+        alt="The SOL shoreline at sunset"
+        widths={[560, 900, 1300]}
+        sizes="(min-width: 1024px) 46vw, 92vw"
+        class="aspect-[4/5] w-full rounded-[2px] object-cover md:aspect-[4/3]"
+      />
+    </div>
+  </div>
+</section>

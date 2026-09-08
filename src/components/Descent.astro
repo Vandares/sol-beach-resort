@@ -1,0 +1,190 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { t, CONTACT, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+
+const files = import.meta.glob<{ default: ImageMetadata }>("../assets/img/*.jpg", { eager: true });
+const pick = (n: string) => files[`../assets/img/${n}.jpg`]!.default;
+const tiles = ["azul-1", "azul-2", "azul-3", "azul-4"].map(pick);
+---
+
+<!--
+  SOL means sun, Azul means blue; both are Spanish, both are on this beach. So
+  the handover is staged as a descent, and it is the page's real theme change:
+  the ground sinks from paper through sea teal into deep water, the surface
+  line rises out of frame, and the page stays dark to the footer.
+
+  No data-dark-zone here. The background is animated, so this section drives
+  the header itself once the water closes over it.
+-->
+<section
+  id="azul"
+  data-descent
+  class="relative isolate overflow-hidden"
+>
+  <div class="relative flex min-h-[100dvh] flex-col justify-center py-28" data-descent-stage>
+    <!-- Sunlight coming down from the surface, weakening with depth. -->
+    <div
+      class="pointer-events-none absolute inset-0 -z-10 opacity-0"
+      data-descent-rays
+      aria-hidden="true"
+      style="background:
+        linear-gradient(178deg, rgba(255,255,255,0.22) 0%, transparent 42%),
+        radial-gradient(120% 60% at 22% -10%, rgba(150,220,235,0.30), transparent 60%),
+        radial-gradient(90% 50% at 78% -6%, rgba(120,200,220,0.20), transparent 55%);"
+    ></div>
+
+    <div class="shell relative w-full">
+      <!-- Surface line -->
+      <p
+        class="text-[clamp(1.6rem,4.2vw,3rem)] font-extralight leading-tight tracking-[-0.02em]"
+        data-descent-surface
+      >
+        {c.azul.surface}
+      </p>
+
+      <div class="relative mt-6" data-descent-deep>
+        <h2 class="text-[clamp(2.2rem,6vw,4.5rem)] font-light leading-[1.05] tracking-[-0.03em] text-paper">
+          {c.azul.title}
+        </h2>
+        <p class="lockup__alt mt-3 text-paper">{c.azul.alt}</p>
+
+        <div class="mt-10 grid gap-12 lg:grid-cols-12">
+          <div class="lg:col-span-6">
+            <p class="max-w-[52ch] text-[1.0625rem] font-light leading-[1.8] text-paper/80">
+              {c.azul.body}
+            </p>
+            <p class="mt-7 max-w-[46ch] border-s-2 border-gold ps-5 text-[1.0625rem] font-light leading-[1.8] text-paper">
+              {c.azul.reef}
+            </p>
+
+            <div class="mt-9 flex flex-wrap items-center gap-x-8 gap-y-3">
+              <p class="text-[0.85rem] tracking-[0.02em] text-paper/60">{c.azul.stat}</p>
+              <p class="text-[0.85rem] text-paper/60">
+                <span class="text-paper tabular-nums">{CONTACT.azulRating}</span>
+                <span class="mx-1.5 text-gold" aria-hidden="true">&#9733;</span>
+                <span class="tabular-nums">{CONTACT.azulReviews}</span>
+              </p>
+            </div>
+
+            <a href={CONTACT.azul} target="_blank" rel="noopener" class="btn btn--light mt-9">
+              {c.azul.cta}
+              <span aria-hidden="true" class="inline-block rtl:-scale-x-100">&#8599;</span>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 lg:col-span-6">
+            {tiles.map((img, i) => (
+              <Image
+                src={img}
+                alt=""
+                aria-hidden="true"
+                widths={[300, 500, 740]}
+                sizes="(min-width: 1024px) 22vw, 44vw"
+                class:list={[
+                  "aspect-[3/4] w-full rounded-[2px] object-cover",
+                  i % 2 === 1 && "mt-8",
+                ]}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Depth readout. Azul labels its own sections by metres, so the scale
+         doubles as a progress cue and as a nod to their system. -->
+    <div
+      class="pointer-events-none absolute bottom-8 end-(--edge) hidden text-end md:block"
+      data-descent-meter
+      aria-hidden="true"
+    >
+      <p class="text-[0.7rem] tracking-[0.18em] text-paper/60">DEPTH</p>
+      <p class="mt-1 text-[1.6rem] font-light tabular-nums text-paper/70">
+        <span data-descent-depth>0</span>M
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  const root = document.querySelector<HTMLElement>("[data-descent]");
+  const reduce = document.documentElement.classList.contains("reduce-motion");
+
+  if (root) {
+    const stage = root.querySelector<HTMLElement>("[data-descent-stage]")!;
+    const surface = root.querySelector<HTMLElement>("[data-descent-surface]")!;
+    const deep = root.querySelector<HTMLElement>("[data-descent-deep]")!;
+    const rays = root.querySelector<HTMLElement>("[data-descent-rays]")!;
+    const depth = root.querySelector<HTMLElement>("[data-descent-depth]")!;
+
+    // The header cannot observe an animated background, so the descent tells
+    // it when the water has closed over the top of the page.
+    const setHeader = (onDark: boolean) => (window as any).__solHeader?.(onDark);
+
+    if (reduce) {
+      // No descent, but the destination must still be legible.
+      root.style.backgroundColor = "var(--color-deep)";
+      surface.style.color = "var(--color-paper)";
+      surface.style.opacity = "0.5";
+      depth.textContent = "40";
+      setHeader(true);
+    } else {
+      gsap.set(deep, { opacity: 0, y: 40 });
+
+      const counter = { v: 0 };
+      let onDark = false;
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: "+=180%",
+          pin: stage,
+          scrub: 0.8,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            // Flip once the teal has taken over, and only on change.
+            const next = self.progress > 0.14;
+            if (next !== onDark) {
+              onDark = next;
+              setHeader(next);
+            }
+          },
+          onLeaveBack: () => {
+            onDark = false;
+            setHeader(false);
+          },
+        },
+      });
+
+      // Ground sinks: paper, shallow teal, then open water.
+      tl.to(root, { backgroundColor: "#266f72", ease: "none", duration: 1 }, 0)
+        .to(root, { backgroundColor: "#0d2c46", ease: "none", duration: 1.4 }, 1)
+        .to(root, { backgroundColor: "#04101a", ease: "none", duration: 1 }, 2.4)
+        // The surface line rises out of frame as the reader goes under.
+        .to(surface, { y: -110, opacity: 0, color: "#faf8f4", ease: "none", duration: 1.1 }, 0)
+        .to(rays, { opacity: 1, ease: "none", duration: 0.9 }, 0.4)
+        .to(rays, { opacity: 0.25, ease: "none", duration: 1.6 }, 1.6)
+        .to(deep, { opacity: 1, y: 0, ease: "power2.out", duration: 1.2 }, 0.9)
+        .to(
+          counter,
+          {
+            v: 40,
+            ease: "none",
+            duration: 3.4,
+            onUpdate: () => { depth.textContent = String(Math.round(counter.v)); },
+          },
+          0,
+        );
+    }
+  }
+</script>

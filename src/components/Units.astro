@@ -1,0 +1,146 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { t, UNITS, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+
+const files = import.meta.glob<{ default: ImageMetadata }>("../assets/img/unit-*.jpg", { eager: true });
+const shot = (id: string, n: number) => files[`../assets/img/unit-${id}-${n}.jpg`]!.default;
+
+const units = UNITS.map((u) => ({
+  ...u,
+  ...c.units.items[u.id]!,
+  images: Array.from({ length: u.shots }, (_, i) => shot(u.id, i + 1)),
+}));
+---
+
+<!--
+  Five variants of one thing, so tabs rather than five stacked rows. Keeps the
+  section short and lets the reader compare layouts without scrolling past
+  thirteen renders.
+-->
+<section id="units" class="bg-paper py-32 md:py-48">
+  <div class="shell">
+    <div class="max-w-[54ch]">
+      <h2 class="text-[clamp(2rem,4.6vw,3.5rem)] font-light leading-[1.06] tracking-[-0.025em]">
+        {c.units.title}
+      </h2>
+      <p class="lockup__alt mt-2">{c.units.alt}</p>
+      <span class="lockup__rule"></span>
+      <p class="js-reveal mt-8 text-[1.0625rem] font-light leading-[1.8] text-ink/75">{c.units.lede}</p>
+    </div>
+
+    <div
+      role="tablist"
+      aria-label={c.units.title}
+      class="mt-14 flex snap-x gap-2 overflow-x-auto pb-2 md:flex-wrap md:overflow-visible md:pb-0"
+    >
+      {units.map((u, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`unit-tab-${u.id}`}
+          aria-controls={`unit-panel-${u.id}`}
+          aria-selected={i === 0 ? "true" : "false"}
+          tabindex={i === 0 ? 0 : -1}
+          data-unit-tab={u.id}
+          class="shrink-0 snap-start rounded-[2px] border border-espresso/25 px-4 py-2.5 text-[0.9rem] font-light whitespace-nowrap transition-colors duration-300 hover:border-espresso/60 aria-selected:border-gold aria-selected:bg-gold aria-selected:text-espresso"
+        >
+          {u.name}
+        </button>
+      ))}
+    </div>
+
+    {units.map((u, i) => (
+      <div
+        role="tabpanel"
+        id={`unit-panel-${u.id}`}
+        aria-labelledby={`unit-tab-${u.id}`}
+        data-unit-panel={u.id}
+        hidden={i !== 0}
+        class="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-14"
+      >
+        <div class="lg:col-span-7">
+          <Image
+            src={u.images[0]!}
+            alt={`${u.name} interior`}
+            widths={[600, 900, 1400]}
+            sizes="(min-width: 1024px) 56vw, 92vw"
+            class="aspect-[4/3] w-full rounded-[2px] object-cover"
+          />
+          {u.images.length > 1 && (
+            <div class="mt-3 grid grid-cols-2 gap-3">
+              {u.images.slice(1).map((img) => (
+                <Image
+                  src={img}
+                  alt=""
+                  aria-hidden="true"
+                  widths={[320, 520, 800]}
+                  sizes="(min-width: 1024px) 27vw, 45vw"
+                  class="aspect-[4/3] w-full rounded-[2px] object-cover"
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div class="lg:col-span-5">
+          <p class="flex items-baseline gap-2">
+            <span class="text-[3.5rem] font-extralight leading-none tabular-nums">{u.area}</span>
+            <span class="text-[1rem] text-ink/55">{c.units.areaLabel}</span>
+          </p>
+
+          <ul class="mt-9">
+            {u.rooms.map((r) => (
+              <li class="border-t border-espresso/12 py-4 text-[1rem] font-light">{r}</li>
+            ))}
+          </ul>
+
+          <p class="mt-8 max-w-[38ch] text-[0.875rem] leading-relaxed text-ink/55">{c.units.note}</p>
+
+          <a href="#membership" class="btn btn--line mt-8">{c.membership.cta}</a>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-unit-tab]"));
+  const panels = Array.from(document.querySelectorAll<HTMLElement>("[data-unit-panel]"));
+
+  function select(id: string, focus = false) {
+    tabs.forEach((t) => {
+      const on = t.dataset.unitTab === id;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on && focus) t.focus();
+    });
+    panels.forEach((p) => {
+      p.hidden = p.dataset.unitPanel !== id;
+    });
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => select(tab.dataset.unitTab!));
+    tab.addEventListener("keydown", (e) => {
+      const i = tabs.indexOf(tab);
+      // Arrow keys walk the tablist. In RTL the horizontal arrows swap.
+      const rtl = document.documentElement.dir === "rtl";
+      const fwd = rtl ? "ArrowLeft" : "ArrowRight";
+      const back = rtl ? "ArrowRight" : "ArrowLeft";
+      let next = -1;
+      if (e.key === fwd || e.key === "ArrowDown") next = (i + 1) % tabs.length;
+      if (e.key === back || e.key === "ArrowUp") next = (i - 1 + tabs.length) % tabs.length;
+      if (e.key === "Home") next = 0;
+      if (e.key === "End") next = tabs.length - 1;
+      if (next >= 0) {
+        e.preventDefault();
+        select(tabs[next]!.dataset.unitTab!, true);
+      }
+    });
+  });
+</script>

@@ -1,0 +1,55 @@
+---
+import { Image } from "astro:assets";
+import hero from "../assets/img/hero-twilight-pool.jpg";
+import { t, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+---
+
+<section
+  data-dark-zone
+  class="relative isolate flex min-h-[100dvh] items-end overflow-hidden bg-deeper"
+>
+  <Image
+    src={hero}
+    alt=""
+    aria-hidden="true"
+    loading="eager"
+    fetchpriority="high"
+    widths={[900, 1400, 2000, 2800]}
+    sizes="100vw"
+    class="absolute inset-0 -z-10 h-full w-full object-cover"
+    data-hero-img
+  />
+  <!-- Scrim: the twilight photo is bright along the horizon, so type needs
+       a floor for contrast. Bottom-weighted to protect the copy block. -->
+  <div
+    class="absolute inset-0 -z-10 bg-linear-to-t from-deeper/92 via-deeper/45 to-deeper/25"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Entry order is the reading order: language mark, headline, promise,
+       action. Staggered with a custom property so the sequence stays in CSS. -->
+  <div class="shell w-full pb-16 pt-24 md:pb-24">
+    <p class="lockup__alt text-paper" data-hero style="--i:0">{c.hero.alt}</p>
+
+    <h1
+      class="mt-4 max-w-[15ch] text-[clamp(2.6rem,7vw,5.25rem)] font-light leading-[1.04] tracking-[-0.025em] text-paper"
+      data-hero
+      style="--i:1"
+    >
+      {c.hero.headline}
+    </h1>
+
+    <p class="mt-7 max-w-[46ch] text-[1.0625rem] font-light leading-relaxed text-paper/85" data-hero style="--i:2">
+      {c.hero.lede}
+    </p>
+
+    <div class="mt-10 flex flex-wrap gap-3" data-hero style="--i:3">
+      <a href="#membership" class="btn btn--light">{c.hero.primary}</a>
+      <a href="#about" class="btn btn--ghost">{c.hero.secondary}</a>
+    </div>
+  </div>
+</section>

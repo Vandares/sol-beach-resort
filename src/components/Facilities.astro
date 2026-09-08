@@ -1,0 +1,104 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { t, FACILITY_IMAGES, FACILITY_ORDER, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+
+const files = import.meta.glob<{ default: ImageMetadata }>("../assets/img/*.jpg", { eager: true });
+const pick = (name: string) => files[`../assets/img/${name}.jpg`]!.default;
+
+const cards = FACILITY_ORDER.map((id, i) => ({
+  id,
+  n: String(i + 1).padStart(2, "0"),
+  img: pick(FACILITY_IMAGES[id]!),
+  ...c.facilities.items[id]!,
+}));
+---
+
+<!-- overflow-hidden matters: the pan track is far wider than the viewport, and
+     without it the whole document gains a horizontal scrollbar. -->
+<section id="facilities" class="relative overflow-hidden bg-paper-2 py-28 md:py-0" data-pan-wrap>
+  <div class="md:flex md:min-h-[100dvh] md:flex-col md:justify-center md:py-24">
+    <div class="shell">
+      <div class="max-w-[54ch]">
+        <h2 class="text-[clamp(2rem,4.4vw,3.25rem)] font-light leading-[1.08] tracking-[-0.02em]">
+          {c.facilities.title}
+        </h2>
+        <p class="lockup__alt mt-2">{c.facilities.alt}</p>
+        <span class="lockup__rule"></span>
+        <p class="mt-8 text-[1.0625rem] font-light leading-[1.75] text-ink/75">{c.facilities.lede}</p>
+      </div>
+    </div>
+
+    <!-- Desktop: the track is panned by GSAP while the section is pinned.
+         Mobile: the same markup is a native scroll-snap strip, no hijack. -->
+    <div
+      class="mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-(--edge) pb-4 md:mt-16 md:overflow-visible md:pb-0"
+      data-pan-track
+    >
+      {cards.map((card) => (
+        <article
+          class="group relative w-[78vw] shrink-0 snap-start overflow-hidden rounded-[2px] sm:w-[46vw] md:w-[27rem]"
+        >
+          <Image
+            src={card.img}
+            alt={card.name}
+            widths={[440, 720, 900]}
+            sizes="(min-width: 768px) 27rem, 78vw"
+            class="h-[26rem] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04] md:h-[30rem]"
+          />
+          <span
+            class="absolute inset-0 bg-linear-to-t from-espresso/88 via-espresso/25 to-transparent"
+            aria-hidden="true"
+          ></span>
+          <div class="absolute inset-x-0 bottom-0 p-7">
+            <p class="text-[0.75rem] font-medium tabular-nums text-gold">{card.n}</p>
+            <h3 class="mt-2 text-[1.35rem] font-light leading-snug text-paper">{card.name}</h3>
+            <p class="mt-2 max-w-[30ch] text-[0.9rem] font-light leading-relaxed text-paper/70">
+              {card.body}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  const wrap = document.querySelector<HTMLElement>("[data-pan-wrap]");
+  const track = document.querySelector<HTMLElement>("[data-pan-track]");
+  const reduce = document.documentElement.classList.contains("reduce-motion");
+
+  if (wrap && track && !reduce) {
+    const rtl = document.documentElement.dir === "rtl";
+
+    // Pin only where a hijack is welcome. Below md the strip stays a normal
+    // swipeable list, which is what a thumb expects.
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      const distance = () => track.scrollWidth - window.innerWidth + 64;
+
+      const tween = gsap.to(track, {
+        x: () => (rtl ? distance() : -distance()),
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrap,
+          start: "top top",
+          end: () => `+=${distance()}`,
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      return () => tween.kill();
+    });
+  }
+</script>

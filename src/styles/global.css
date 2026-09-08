@@ -1,0 +1,314 @@
+@import "tailwindcss";
+
+/* ── Fonts ────────────────────────────────────────────────────────────────
+   Self-hosted. Outfit is a geometric sans matching the company profile's
+   English type. IBM Plex Sans Arabic is its Arabic counterpart.            */
+@import "@fontsource-variable/outfit";
+@import "@fontsource/ibm-plex-sans-arabic/300.css";
+@import "@fontsource/ibm-plex-sans-arabic/400.css";
+@import "@fontsource/ibm-plex-sans-arabic/600.css";
+@import "@fontsource/ibm-plex-sans-arabic/700.css";
+
+@theme {
+  /* Brand palette, extracted from the SOL mandala and company profile.
+     Day half of the page. */
+  --color-paper:      #faf8f4;
+  --color-paper-2:    #f2ede4;
+  --color-sand:       #f4d9b3;
+  --color-taupe:      #a08d7e;
+  --color-ink:        #241a15;
+  --color-espresso:   #311f18;
+
+  /* The single locked accent. Used for rules, marks, active states and the
+     descent gradient. Never a second accent anywhere on the page. */
+  --color-gold:       #f8ca1f;
+  --color-gold-deep:  #d9a814;
+  /* Same accent, darkened until it passes AA as text on paper (5.9:1).
+     Used for form errors on the light sections. */
+  --color-gold-ink:   #7a5a05;
+
+  /* Supporting tones, photography-derived. Grounds only, never accents. */
+  --color-teal:       #266f72;
+  --color-terracotta: #d2252e;
+
+  /* Night half of the page: one continuous descent from espresso through
+     sea navy into night. Grounds, not accents. */
+  --color-deep:       #0d2c46;
+  --color-deeper:     #071826;
+  --color-night:      #0a0710;
+
+  --font-sans: "Outfit Variable", "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-ar: "IBM Plex Sans Arabic", "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-brand: 2px;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --shell: 1400px;
+    --edge: clamp(1.25rem, 5vw, 5rem);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  [lang="ar"] body,
+  [dir="rtl"] body { font-family: var(--font-ar); }
+
+  ::selection { background: var(--color-gold); color: var(--color-espresso); }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-deep);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+}
+
+@layer components {
+  /* Page shell */
+  .shell {
+    width: 100%;
+    max-width: var(--shell);
+    margin-inline: auto;
+    padding-inline: var(--edge);
+  }
+
+  /* The brand's bilingual lockup: primary language large, the other language
+     beneath at lower weight, then a hairline. Straight from the profile. */
+  .lockup__alt {
+    font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    opacity: 0.55;
+  }
+  .lockup__rule {
+    display: block;
+    inline-size: 3.5rem;
+    block-size: 1px;
+    background: currentColor;
+    opacity: 0.28;
+    margin-block-start: 1.25rem;
+  }
+
+  /* Palm-frond shadow. The profile prints this in a corner of nearly every
+     page. Decorative only, never intercepts pointer events. */
+  .palm {
+    position: absolute;
+    inline-size: min(52rem, 68vw);
+    aspect-ratio: 1500 / 723;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url("/palm.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+  }
+  .palm--tl { inset-block-start: -6rem; inset-inline-start: -10rem; }
+  .palm--tr { inset-block-start: -8rem; inset-inline-end: -12rem; transform: scaleX(-1); }
+
+  [dir="rtl"] .palm--tl { transform: scaleX(-1); }
+  [dir="rtl"] .palm--tr { transform: none; }
+
+  /* Buttons. One radius system across the whole page. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border-radius: var(--radius-brand);
+    padding: 0.95rem 1.6rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    transition: background-color 0.35s var(--ease-out-quint),
+                color 0.35s var(--ease-out-quint),
+                border-color 0.35s var(--ease-out-quint),
+                transform 0.15s var(--ease-out-quint);
+  }
+  .btn:active { transform: translateY(1px); }
+
+  /* espresso fill, paper text: 13.9:1 */
+  .btn--solid { background: var(--color-espresso); color: var(--color-paper); }
+  .btn--solid:hover { background: var(--color-ink); }
+
+  /* on paper: 12.6:1 */
+  .btn--line {
+    border: 1px solid color-mix(in srgb, var(--color-espresso) 30%, transparent);
+    color: var(--color-espresso);
+  }
+  .btn--line:hover {
+    border-color: var(--color-espresso);
+    background: color-mix(in srgb, var(--color-espresso) 5%, transparent);
+  }
+
+  /* on dark grounds: paper fill, espresso text 13.9:1 */
+  .btn--light { background: var(--color-paper); color: var(--color-espresso); }
+  .btn--light:hover { background: var(--color-gold); }
+
+  /* on dark grounds, outlined. paper text on deep navy is 12.1:1 */
+  .btn--ghost {
+    border: 1px solid color-mix(in srgb, var(--color-paper) 34%, transparent);
+    color: var(--color-paper);
+  }
+  .btn--ghost:hover {
+    border-color: var(--color-gold);
+    color: var(--color-gold);
+  }
+}
+
+@layer utilities {
+  /* Reveal primitive. Driven by IntersectionObserver plus a CSS transition
+     rather than a JS ticker, so a stalled frame loop can never leave content
+     stuck invisible. No-JS and reduced-motion users see everything at once. */
+  .js-reveal { opacity: 1; }
+
+  html.has-js:not(.reduce-motion) .js-reveal {
+    opacity: 0;
+    transform: translateY(1.75rem);
+    transition:
+      opacity 0.8s var(--ease-out-quint) var(--reveal-delay, 0ms),
+      transform 0.8s var(--ease-out-quint) var(--reveal-delay, 0ms);
+  }
+  html.has-js:not(.reduce-motion) .js-reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Head and tail lights for the scroll companion. They are children of the
+     car, so they turn with it and the beam always points the way it is
+     travelling. Pre-softened radials, so no blur filter is needed. */
+  .car-glow {
+    position: absolute;
+    inset-inline-start: 50%;
+    z-index: 0;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .car-glow--front {
+    inset-block-start: -46%;
+    inline-size: 210%;
+    block-size: 86%;
+    translate: -50% 0;
+    background: radial-gradient(
+      closest-side,
+      rgb(255 232 168 / 0.5) 0%,
+      rgb(252 214 122 / 0.26) 40%,
+      rgb(248 202 31 / 0) 100%
+    );
+  }
+  .car-glow--rear {
+    inset-block-end: -24%;
+    inline-size: 130%;
+    block-size: 46%;
+    translate: -50% 0;
+    background: radial-gradient(
+      closest-side,
+      rgb(226 62 46 / 0.42) 0%,
+      rgb(210 37 46 / 0.18) 46%,
+      rgb(210 37 46 / 0) 100%
+    );
+  }
+
+  /* The header sits over the hero with no ground of its own. The moment the
+     page scrolls, it needs one, or headlines and photographs run straight
+     through the navigation. The tint follows whichever theme is behind it. */
+  [data-header] {
+    background-color: transparent;
+    border-block-end: 1px solid transparent;
+    transition:
+      background-color 0.4s var(--ease-out-quint),
+      backdrop-filter 0.4s var(--ease-out-quint),
+      border-color 0.4s var(--ease-out-quint),
+      color 0.5s var(--ease-out-quint);
+  }
+  [data-header].is-stuck {
+    background-color: color-mix(in srgb, var(--color-paper) 88%, transparent);
+    backdrop-filter: saturate(150%) blur(14px);
+    -webkit-backdrop-filter: saturate(150%) blur(14px);
+    border-block-end-color: color-mix(in srgb, var(--color-espresso) 12%, transparent);
+  }
+  [data-header].is-stuck.text-paper {
+    background-color: color-mix(in srgb, var(--color-night) 84%, transparent);
+    border-block-end-color: color-mix(in srgb, var(--color-paper) 14%, transparent);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    [data-header].is-stuck { background-color: var(--color-paper); backdrop-filter: none; }
+    [data-header].is-stuck.text-paper { background-color: var(--color-night); }
+  }
+
+  /* The Azul descent animates a light ground into deep water, and its copy is
+     light. Without JS that copy would sit on paper and vanish, so the section
+     defaults to the deep ground and only starts light when the animation can
+     actually run. */
+  [data-descent] { background-color: var(--color-deep); }
+  [data-descent] [data-descent-surface] { color: var(--color-paper); opacity: 0.55; }
+
+  html.has-js:not(.reduce-motion) [data-descent] { background-color: var(--color-paper); }
+  html.has-js:not(.reduce-motion) [data-descent] [data-descent-surface] {
+    color: var(--color-ink);
+    opacity: 1;
+  }
+
+  /* Manifesto word rise. Same contract as the reveal primitive: the hidden
+     state exists only while JS is present and motion is welcome. */
+  html.has-js:not(.reduce-motion) [data-manifesto] [data-word] {
+    transform: translateY(110%);
+    transition: transform 0.85s var(--ease-out-quint) var(--d, 0ms);
+  }
+  html.has-js:not(.reduce-motion) [data-manifesto].is-in [data-word] {
+    transform: none;
+  }
+
+  /* Hero entry. A declarative animation always lands on its end state. */
+  html.has-js:not(.reduce-motion) [data-hero] {
+    opacity: 0;
+    animation: hero-rise 0.95s var(--ease-out-quint) forwards;
+    animation-delay: calc(0.25s + var(--i, 0) * 0.11s);
+  }
+  html.has-js:not(.reduce-motion) [data-hero-img] {
+    animation: hero-settle 2s var(--ease-out-quint) forwards;
+  }
+
+  @keyframes hero-rise {
+    from { opacity: 0; transform: translateY(1.6rem); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes hero-settle {
+    from { transform: scale(1.06); }
+    to   { transform: scale(1); }
+  }
+
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.028;
+    background-image: url("/grain.png");
+    background-size: 180px;
+  }
+}

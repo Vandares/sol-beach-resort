@@ -1,0 +1,90 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { t, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+
+const files = import.meta.glob<{ default: ImageMetadata }>("../assets/img/*.jpg", { eager: true });
+const pick = (n: string) => files[`../assets/img/${n}.jpg`]!.default;
+
+const wide = pick("nightshift-1");
+const mosaic = ["nightshift-2", "nightshift-6", "nightshift-3", "nightshift-7", "nightshift-4"].map(pick);
+---
+
+<!--
+  This is the page's one theme change: evening falls here, and the page stays
+  dark from this point to the footer. Colour comes from the photography, which
+  is genuinely neon. The UI palette does not change: gold stays the only accent.
+-->
+<section data-dark-zone class="relative overflow-hidden bg-night pt-60 pb-60 text-paper md:pt-80 md:pb-80">
+  <!-- Night Shift is a dark interlude in an otherwise light page: dusk falls
+       at the top edge and lifts again at the bottom. Padding clears both
+       gradients so text contrast is always measured against full night. -->
+  <div
+    class="pointer-events-none absolute inset-x-0 top-0 h-56 bg-linear-to-b from-paper-2 to-night md:h-72"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-linear-to-b from-night to-paper md:h-72"
+    aria-hidden="true"
+  ></div>
+
+  <div class="shell relative">
+    <div class="grid gap-12 lg:grid-cols-12 lg:items-end">
+      <div class="lg:col-span-5">
+        <h2 class="text-[clamp(2rem,4.6vw,3.5rem)] font-light leading-[1.06] tracking-[-0.025em]">
+          {c.night.title}
+        </h2>
+        <p class="lockup__alt mt-2 text-paper">{c.night.alt}</p>
+        <span class="lockup__rule"></span>
+      </div>
+      <div class="lg:col-span-6 lg:col-start-7">
+        <p class="js-reveal text-[1.0625rem] font-light leading-[1.8] text-paper/75">{c.night.body}</p>
+      </div>
+    </div>
+
+    <div class="js-reveal mt-14 overflow-hidden rounded-[2px]">
+      <Image
+        src={wide}
+        alt="The Night Shift lounge at SOL"
+        widths={[760, 1200, 1520]}
+        sizes="(min-width: 1400px) 1320px, 92vw"
+        class="h-[42vh] w-full object-cover md:h-[58vh]"
+      />
+    </div>
+
+    <div class="mt-16 grid gap-14 lg:grid-cols-12">
+      <!-- Six areas as a two-column hairline list. No cards, no icons: the
+           spacing does the grouping. -->
+      <dl class="grid gap-x-12 gap-y-0 sm:grid-cols-2 lg:col-span-7">
+        {c.night.areas.map((a) => (
+          <div class="js-reveal border-t border-paper/12 py-6">
+            <dt class="text-[1.05rem] font-normal">{a.name}</dt>
+            <dd class="mt-2 max-w-[34ch] text-[0.925rem] font-light leading-relaxed text-paper/60">
+              {a.body}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="grid grid-cols-2 gap-3 lg:col-span-5 lg:grid-cols-2">
+        {mosaic.slice(0, 4).map((img, i) => (
+          <Image
+            src={img}
+            alt=""
+            aria-hidden="true"
+            widths={[280, 460, 740]}
+            sizes="(min-width: 1024px) 18vw, 44vw"
+            class:list={[
+              "w-full rounded-[2px] object-cover",
+              i === 0 ? "aspect-[4/5]" : i === 3 ? "aspect-[4/5]" : "aspect-square",
+            ]}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

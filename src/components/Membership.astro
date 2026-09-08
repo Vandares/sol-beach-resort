@@ -1,0 +1,238 @@
+---
+import { Image } from "astro:assets";
+import pool from "../assets/img/pools-3.jpg";
+import units from "../assets/img/units-1.jpg";
+import { t, CONTACT, type Locale } from "../data/content";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = t(locale);
+const ar = locale === "ar";
+
+const L = {
+  name: ar ? "الاسم الكامل" : "Full name",
+  phone: ar ? "رقم الجوال" : "Phone number",
+  email: ar ? "البريد الإلكتروني" : "Email",
+  tier: ar ? "نوع العضوية" : "Which membership",
+  unit: ar ? "نوع الوحدة" : "Which unit",
+  kind: ar ? "ما الذي تسأل عنه؟" : "What are you enquiring about?",
+  kindMembership: ar ? "عضوية" : "Membership",
+  kindUnit: ar ? "وحدة" : "A unit",
+  note: ar ? "ملاحظات" : "Anything we should know",
+  optional: ar ? "اختياري" : "Optional",
+  choose: ar ? "اختر" : "Please choose",
+  send: ar ? "الإرسال عبر واتساب" : "Send via WhatsApp",
+  help: ar
+    ? "يفتح واتساب برسالة جاهزة يمكنك مراجعتها قبل الإرسال."
+    : "This opens WhatsApp with your details filled in, so you can read them before sending.",
+  errName: ar ? "يرجى كتابة الاسم." : "Please enter your name.",
+  errPhone: ar ? "يرجى كتابة رقم جوال صحيح." : "Please enter a valid phone number.",
+  errEmail: ar ? "يرجى كتابة بريد إلكتروني صحيح." : "Please enter a valid email address.",
+  errTier: ar ? "يرجى اختيار نوع العضوية." : "Please choose a membership option.",
+  errUnit: ar ? "يرجى اختيار نوع الوحدة." : "Please choose a unit.",
+};
+---
+
+<section id="membership" class="relative overflow-hidden bg-paper py-32 md:py-44">
+  <div class="shell grid gap-16 lg:grid-cols-12 lg:gap-20">
+    <div class="lg:col-span-5">
+      <h2 class="text-[clamp(2rem,4.6vw,3.5rem)] font-light leading-[1.06] tracking-[-0.025em]">
+        {c.membership.title}
+      </h2>
+      <p class="lockup__alt mt-2">{c.membership.alt}</p>
+      <span class="lockup__rule"></span>
+
+      <p class="mt-8 max-w-[46ch] text-[1.0625rem] font-light leading-[1.8] text-ink/75">
+        {c.membership.body}
+      </p>
+
+      <dl class="mt-10">
+        <dt class="text-[0.8rem] tracking-[0.02em] text-ink/55">{c.membership.tiersLabel}</dt>
+        {c.membership.tiers.map((x) => (
+          <dd class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-espresso/12 py-3.5">
+            <span class="text-[1rem] font-light">{x.name}</span>
+            <span class="text-[0.85rem] text-ink/55">{x.capacity}</span>
+          </dd>
+        ))}
+      </dl>
+
+      <div class="mt-8">
+        <p class="text-[0.8rem] tracking-[0.02em] text-ink/55">{c.membership.rulesLabel}</p>
+        <ul class="mt-3 grid gap-2">
+          {c.membership.rules.map((x) => (
+            <li class="text-[0.925rem] font-light leading-relaxed text-ink/70">{x}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="mt-12 grid grid-cols-2 gap-3">
+        <Image src={pool} alt="" aria-hidden="true" widths={[280, 480, 740]} sizes="24vw"
+          class="aspect-[3/4] w-full rounded-[2px] object-cover" />
+        <Image src={units} alt="" aria-hidden="true" widths={[280, 480, 760]} sizes="24vw"
+          class="mt-8 aspect-[3/4] w-full rounded-[2px] object-cover" />
+      </div>
+    </div>
+
+    <div class="lg:col-span-6 lg:col-start-7">
+      <form data-mform novalidate class="grid gap-6">
+        <div class="grid gap-2">
+          <label for="mf-name" class="text-[0.875rem] text-ink/75">{L.name}</label>
+          <input id="mf-name" name="name" type="text" autocomplete="name" required
+            class="rounded-[2px] border border-espresso/25 bg-transparent px-4 py-3.5 text-[0.975rem] text-ink transition-colors focus:border-gold-ink focus:outline-none" />
+          <p data-err="name" hidden class="text-[0.825rem] text-gold-ink">{L.errName}</p>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2">
+          <div class="grid gap-2">
+            <label for="mf-phone" class="text-[0.875rem] text-ink/75">{L.phone}</label>
+            <input id="mf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required dir="ltr"
+              class="rounded-[2px] border border-espresso/25 bg-transparent px-4 py-3.5 text-[0.975rem] text-ink transition-colors focus:border-gold-ink focus:outline-none" />
+            <p data-err="phone" hidden class="text-[0.825rem] text-gold-ink">{L.errPhone}</p>
+          </div>
+          <div class="grid gap-2">
+            <label for="mf-email" class="text-[0.875rem] text-ink/75">{L.email}</label>
+            <input id="mf-email" name="email" type="email" autocomplete="email" required dir="ltr"
+              class="rounded-[2px] border border-espresso/25 bg-transparent px-4 py-3.5 text-[0.975rem] text-ink transition-colors focus:border-gold-ink focus:outline-none" />
+            <p data-err="email" hidden class="text-[0.825rem] text-gold-ink">{L.errEmail}</p>
+          </div>
+        </div>
+
+        <!-- A membership and a unit are different enquiries, so the form asks
+             for one or the other rather than letting both be filled in. -->
+        <fieldset class="grid gap-3">
+          <legend class="mb-1 text-[0.875rem] text-ink/75">{L.kind}</legend>
+          <div class="flex flex-wrap gap-2">
+            {[
+              { v: "membership", label: L.kindMembership },
+              { v: "unit", label: L.kindUnit },
+            ].map((o, i) => (
+              <label class="cursor-pointer rounded-[2px] border border-espresso/25 px-4 py-2.5 text-[0.9rem] font-light transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold has-[:checked]:text-espresso hover:border-espresso/60">
+                <input type="radio" name="kind" value={o.v} checked={i === 0} class="sr-only" data-kind />
+                {o.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div class="grid gap-2" data-kind-panel="membership">
+          <label for="mf-tier" class="text-[0.875rem] text-ink/75">{L.tier}</label>
+          <select id="mf-tier" name="tier"
+            class="appearance-none rounded-[2px] border border-espresso/25 bg-transparent px-4 py-3.5 text-[0.975rem] text-ink transition-colors focus:border-gold-ink focus:outline-none">
+            <option value="" class="text-ink">{L.choose}</option>
+            {c.membership.tiers.map((x) => <option value={x.name} class="text-ink">{x.name}</option>)}
+          </select>
+          <p data-err="tier" hidden class="text-[0.825rem] text-gold-ink">{L.errTier}</p>
+        </div>
+
+        <div class="grid gap-2" data-kind-panel="unit" hidden>
+          <label for="mf-unit" class="text-[0.875rem] text-ink/75">{L.unit}</label>
+          <select id="mf-unit" name="unit"
+            class="appearance-none rounded-[2px] border border-espresso/25 bg-transparent px-4 py-3.5 text-[0.975rem] text-ink transition-colors focus:border-gold-ink focus:outline-none">
+            <option value="" class="text-ink">{L.choose}</option>
+            {c.membership.units.map((x) => <option value={x} class="text-ink">{x}</option>)}
+          </select>
+          <p data-err="unit" hidden class="text-[0.825rem] text-gold-ink">{L.errUnit}</p>
+        </div>
+
+        <div class="grid gap-2">
+          <label for="mf-note" class="text-[0.875rem] text-ink/75">
+            {L.note} <span class="text-ink/55">({L.optional})</span>
+          </label>
+          <textarea id="mf-note" name="note" rows="3"
+            class="resize-y rounded-[2px] border border-espresso/25 bg-transparent px-4 py-3.5 text-[0.975rem] text-ink transition-colors focus:border-gold-ink focus:outline-none"></textarea>
+        </div>
+
+        <div class="mt-2 flex flex-wrap items-center gap-4">
+          <button type="submit" class="btn btn--solid">{L.send}</button>
+          <a href={`mailto:${CONTACT.email}`} class="text-[0.9rem] text-ink/70 underline underline-offset-4 transition-colors hover:text-gold-ink">
+            {c.membership.secondary}
+          </a>
+        </div>
+
+        <p class="text-[0.825rem] leading-relaxed text-ink/55">{L.help}</p>
+        <p class="text-[0.825rem] leading-relaxed text-ink/55">{c.membership.note}</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ WA: CONTACT.whatsapp, LOC: locale }}>
+  const form = document.querySelector("[data-mform]");
+  if (form) {
+    const show = (key, on) => {
+      const el = form.querySelector(`[data-err="${key}"]`);
+      const field = form.elements[key];
+      if (el) el.hidden = !on;
+      if (field) {
+        field.setAttribute("aria-invalid", String(on));
+        field.classList.toggle("border-gold", on);
+      }
+    };
+
+    // Membership or unit, never both. Only the active select stays enabled,
+    // so the other can never contribute a value.
+    const panels = form.querySelectorAll("[data-kind-panel]");
+    const kindOf = () => form.querySelector("[data-kind]:checked").value;
+
+    function applyKind() {
+      const kind = kindOf();
+      panels.forEach((p) => {
+        const on = p.dataset.kindPanel === kind;
+        p.hidden = !on;
+        const sel = p.querySelector("select");
+        sel.disabled = !on;
+        if (!on) {
+          sel.value = "";
+          show(sel.name, false);
+        }
+      });
+    }
+    form.querySelectorAll("[data-kind]").forEach((r) => r.addEventListener("change", applyKind));
+    applyKind();
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = form.elements;
+      const kind = kindOf();
+      const pickKey = kind === "unit" ? "unit" : "tier";
+      const name = f.name.value.trim();
+      const phone = f.phone.value.trim();
+      const email = f.email.value.trim();
+      const note = f.note.value.trim();
+      const pick = f[pickKey].value;
+
+      const bad = {
+        name: name.length < 2,
+        phone: phone.replace(/\D/g, "").length < 8,
+        email: !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email),
+        [pickKey]: !pick,
+      };
+      Object.entries(bad).forEach(([k, v]) => show(k, v));
+
+      const firstBad = Object.keys(bad).find((k) => bad[k]);
+      if (firstBad) {
+        f[firstBad].focus();
+        return;
+      }
+
+      const L = LOC === "ar";
+      const subject = kind === "unit"
+        ? (L ? "استفسار عن وحدة في سول بيتش ريزورت" : "Unit enquiry, SOL Beach Resort")
+        : (L ? "طلب عضوية في سول بيتش ريزورت" : "Membership enquiry, SOL Beach Resort");
+
+      const lines = [
+        subject,
+        "",
+        `${L ? "الاسم" : "Name"}: ${name}`,
+        `${L ? "الجوال" : "Phone"}: ${phone}`,
+        `${L ? "البريد" : "Email"}: ${email}`,
+        kind === "unit"
+          ? `${L ? "الوحدة" : "Unit"}: ${pick}`
+          : `${L ? "العضوية" : "Membership"}: ${pick}`,
+      ];
+      if (note) lines.push("", note);
+
+      window.open(`https://wa.me/${WA}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank", "noopener");
+    });
+  }
+</script>
