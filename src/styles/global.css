@@ -232,6 +232,22 @@
     );
   }
 
+  /* On a phone the car is only 18px wide, so a beam at the desktop
+     proportions would reach across the first column of text. Tighten it
+     rather than dropping it: the headlight still throws light ahead. */
+  @media (max-width: 1023px) {
+    .car-glow--front {
+      inset-block-start: -30%;
+      inline-size: 150%;
+      block-size: 72%;
+    }
+    .car-glow--rear {
+      inset-block-end: -16%;
+      inline-size: 104%;
+      block-size: 38%;
+    }
+  }
+
   /* The header sits over the hero with no ground of its own. The moment the
      page scrolls, it needs one, or headlines and photographs run straight
      through the navigation. The tint follows whichever theme is behind it. */
