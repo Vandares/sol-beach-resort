@@ -200,9 +200,13 @@
   /* Head and tail lights for the scroll companion. They are children of the
      car, so they turn with it and the beam always points the way it is
      travelling. Pre-softened radials, so no blur filter is needed. */
+  /* Centred with a physical `left`, deliberately. A logical inset flips to
+     `right` under RTL while `translate` stays physical, so the two stop
+     cancelling and the glow slides off the car by half its width. Centring
+     inside the car is symmetric, so it never needed to be direction-aware. */
   .car-glow {
     position: absolute;
-    inset-inline-start: 50%;
+    left: 50%;
     z-index: 0;
     border-radius: 50%;
     pointer-events: none;
