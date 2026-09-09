@@ -165,13 +165,19 @@ const jsonLd = {
       turns to face whichever way you are scrolling. Decorative, so it is
       hidden from assistive tech and never intercepts a pointer.
     -->
+    <!--
+      Width is tied to the empty margin beside the text column, which is all
+      the room there is: 20px on a phone, 64px by the time we reach a laptop.
+      The car is sized to fit that lane at every breakpoint rather than being
+      hidden on small screens.
+    -->
     <div
       data-car
       aria-hidden="true"
-      class="pointer-events-none fixed start-3 top-0 z-40 hidden w-11 opacity-0 xl:block"
+      class="pointer-events-none fixed start-px top-0 z-40 block w-[18px] opacity-0 sm:start-0.5 sm:w-6 md:w-7 lg:start-1 lg:w-8 xl:start-3 xl:w-11"
     >
-      <span class="car-glow car-glow--front"></span>
-      <span class="car-glow car-glow--rear"></span>
+      <span class="car-glow car-glow--front hidden lg:block"></span>
+      <span class="car-glow car-glow--rear hidden lg:block"></span>
       <img
         src="/car.png"
         alt=""
