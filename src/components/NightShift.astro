@@ -11,7 +11,7 @@ const files = import.meta.glob<{ default: ImageMetadata }>("../assets/img/*.jpg"
 const pick = (n: string) => files[`../assets/img/${n}.jpg`]!.default;
 
 const wide = pick("nightshift-1");
-const mosaic = ["nightshift-2", "nightshift-6", "nightshift-3", "nightshift-7", "nightshift-4"].map(pick);
+const mosaic = ["nightshift-2", "nightshift-6", "nightshift-3", "nightshift-pool-table", "nightshift-4"].map(pick);
 ---
 
 <!--
