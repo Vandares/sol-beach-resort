@@ -13,7 +13,7 @@ const pick = (n: string) => files[`../assets/img/${n}.jpg`]!.default;
 // One photograph per belief, chosen to carry the idea rather than decorate it.
 const cells = [
   { img: pick("lifestyle-sunset-woman-hat"), alt: "A member alone on the shoreline at sunset", wide: true },
-  { img: pick("resort-sunset-a"), alt: "The resort at sunset", wide: false },
+  { img: pick("units-3"), alt: "Residences around the pool at twilight", wide: false },
   { img: pick("lifestyle-morning-calm"), alt: "A slow morning at SOL", wide: false },
   { img: pick("diwaniyah-lounge"), alt: "Details in the Diwaniyah lounge", wide: true },
 ].map((cell, i) => ({ ...cell, text: c.beliefs.items[i]! }));
