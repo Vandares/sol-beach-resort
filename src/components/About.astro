@@ -1,6 +1,5 @@
 ---
 import { Image } from "astro:assets";
-import portrait from "../assets/img/lifestyle-woman-sea.jpg";
 import arches from "../assets/img/architecture-arches-sunset.jpg";
 import { t, type Locale } from "../data/content";
 
@@ -13,8 +12,8 @@ const c = t(locale);
   <span class="palm palm--tl" aria-hidden="true"></span>
 
   <div class="shell relative">
-    <!-- Asymmetric editorial: prose sits on a 7-column measure, the portrait
-         breaks the grid and runs past the section padding. -->
+    <!-- Asymmetric editorial: prose sits on a 7-column measure, the arches
+         photograph fills the remaining five. -->
     <div class="grid gap-14 lg:grid-cols-12 lg:gap-16">
       <div class="lg:col-span-7">
         <h2 class="text-[clamp(2rem,4.4vw,3.25rem)] font-light leading-[1.08] tracking-[-0.02em]">
@@ -45,19 +44,11 @@ const c = t(locale);
 
       <div class="js-reveal lg:col-span-5">
         <Image
-          src={portrait}
-          alt="A member looking out to the Red Sea from the SOL shoreline"
-          widths={[420, 700, 1000]}
-          sizes="(min-width: 1024px) 34vw, 90vw"
-          class="aspect-[3/4] w-full rounded-[2px] object-cover"
-        />
-        <Image
           src={arches}
           alt="The arched terraces at SOL in evening light"
-          widths={[320, 560, 800]}
-          sizes="(min-width: 1024px) 22vw, 60vw"
-          class="-mt-24 ms-auto me-0 hidden w-[62%] rounded-[2px] object-cover shadow-[0_30px_70px_-30px_rgba(36,26,21,0.45)] lg:block"
-          style="aspect-ratio: 3 / 4;"
+          widths={[420, 700, 1000, 1400]}
+          sizes="(min-width: 1024px) 34vw, 90vw"
+          class="aspect-[3/4] w-full rounded-[2px] object-cover"
         />
       </div>
     </div>
