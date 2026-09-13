@@ -10,7 +10,7 @@ const c = t(locale);
 const files = import.meta.glob<{ default: ImageMetadata }>("../assets/img/*.jpg", { eager: true });
 const pick = (n: string) => files[`../assets/img/${n}.jpg`]!.default;
 
-const wide = pick("nightshift-1");
+const wide = pick("nightshift-retro-wall");
 const mosaic = ["nightshift-2", "nightshift-6", "nightshift-3", "nightshift-pool-table", "nightshift-4"].map(pick);
 ---
 
@@ -49,7 +49,7 @@ const mosaic = ["nightshift-2", "nightshift-6", "nightshift-3", "nightshift-pool
     <div class="js-reveal mt-14 overflow-hidden rounded-[2px]">
       <Image
         src={wide}
-        alt="The Night Shift lounge at SOL"
+        alt="Retro televisions and rotary phones on the Night Shift wall"
         widths={[760, 1200, 1520]}
         sizes="(min-width: 1400px) 1320px, 92vw"
         class="h-[42vh] w-full object-cover md:h-[58vh]"
