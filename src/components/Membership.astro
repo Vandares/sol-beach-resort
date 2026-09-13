@@ -46,23 +46,54 @@ const L = {
         {c.membership.body}
       </p>
 
-      <dl class="mt-10">
-        <dt class="text-[0.8rem] tracking-[0.02em] text-ink/55">{c.membership.tiersLabel}</dt>
-        {c.membership.tiers.map((x) => (
-          <dd class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-espresso/12 py-3.5">
-            <span class="text-[1rem] font-light">{x.name}</span>
-            <span class="text-[0.85rem] text-ink/55">{x.capacity}</span>
-          </dd>
-        ))}
-      </dl>
-
-      <div class="mt-8">
-        <p class="text-[0.8rem] tracking-[0.02em] text-ink/55">{c.membership.rulesLabel}</p>
-        <ul class="mt-3 grid gap-2">
-          {c.membership.rules.map((x) => (
-            <li class="text-[0.925rem] font-light leading-relaxed text-ink/70">{x}</li>
+      <!-- Five options, each with its own capacity and rules, so the reader
+           picks one and sees only its details. Kept in step with the form's
+           "Which membership" field in both directions. -->
+      <div class="mt-10">
+        <p id="tier-label" class="text-[0.8rem] tracking-[0.02em] text-ink/55">{c.membership.tiersLabel}</p>
+        <div role="tablist" aria-labelledby="tier-label" class="mt-3 flex flex-wrap gap-2">
+          {c.membership.tiers.map((x, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`tier-tab-${x.id}`}
+              aria-controls={`tier-panel-${x.id}`}
+              aria-selected={i === 0 ? "true" : "false"}
+              tabindex={i === 0 ? 0 : -1}
+              data-tier-tab={x.id}
+              class="whitespace-nowrap rounded-[2px] border border-espresso/25 px-4 py-2.5 text-[0.9rem] font-light transition-colors duration-300 hover:border-espresso/60 aria-selected:border-gold aria-selected:bg-gold aria-selected:text-espresso"
+            >
+              {x.name}
+            </button>
           ))}
-        </ul>
+        </div>
+
+        {c.membership.tiers.map((x, i) => (
+          <div
+            role="tabpanel"
+            id={`tier-panel-${x.id}`}
+            aria-labelledby={`tier-tab-${x.id}`}
+            data-tier-panel={x.id}
+            hidden={i !== 0}
+            class="mt-7 border-t border-espresso/12 pt-7"
+          >
+            <p class="text-[0.8rem] text-ink/55">{x.kind}</p>
+            <h3 class="mt-1 text-[1.75rem] font-light leading-tight tracking-[-0.01em]">{x.name}</h3>
+
+            <p class="mt-6 text-[0.8rem] text-ink/55">{c.membership.capacityLabel}</p>
+            <p class="mt-1 text-[1.1rem] font-light">{x.capacity}</p>
+
+            <p class="mt-6 text-[0.8rem] text-ink/55">{c.membership.pointsLabel}</p>
+            <ul class="mt-2 grid gap-2.5">
+              {x.points.map((p) => (
+                <li class="flex gap-3 text-[0.95rem] font-light leading-relaxed text-ink/75">
+                  <span class="mt-[0.8em] block h-px w-3 shrink-0 bg-gold-ink" aria-hidden="true"></span>
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       <div class="mt-12 grid grid-cols-2 gap-3">
@@ -119,7 +150,7 @@ const L = {
           <select id="mf-tier" name="tier"
             class="appearance-none rounded-[2px] border border-espresso/25 bg-transparent px-4 py-3.5 text-[0.975rem] text-ink transition-colors focus:border-gold-ink focus:outline-none">
             <option value="" class="text-ink">{L.choose}</option>
-            {c.membership.tiers.map((x) => <option value={x.name} class="text-ink">{x.name}</option>)}
+            {c.membership.tiers.map((x) => <option value={x.id} class="text-ink">{x.name}</option>)}
           </select>
           <p data-err="tier" hidden class="text-[0.825rem] text-gold-ink">{L.errTier}</p>
         </div>
@@ -199,7 +230,10 @@ const L = {
       const phone = f.phone.value.trim();
       const email = f.email.value.trim();
       const note = f.note.value.trim();
-      const pick = f[pickKey].value;
+      // Values are stable ids; the message should carry the readable name.
+      const pickSelect = f[pickKey];
+      const pickValue = pickSelect.value;
+      const pick = pickValue ? pickSelect.options[pickSelect.selectedIndex].text : "";
 
       const bad = {
         name: name.length < 2,
@@ -235,4 +269,52 @@ const L = {
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank", "noopener");
     });
   }
+</script>
+
+<script>
+  // Option selector: switch the details panel, and keep it in step with the
+  // form's "Which membership" field in both directions.
+  const tierTabs = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-tier-tab]"));
+  const tierPanels = Array.from(document.querySelectorAll<HTMLElement>("[data-tier-panel]"));
+  const tierSelect = document.getElementById("mf-tier") as HTMLSelectElement | null;
+
+  function selectTier(id: string, opts: { focus?: boolean; fromForm?: boolean } = {}) {
+    if (!tierTabs.some((t) => t.dataset.tierTab === id)) return;
+    tierTabs.forEach((t) => {
+      const on = t.dataset.tierTab === id;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on && opts.focus) t.focus();
+    });
+    tierPanels.forEach((p) => {
+      p.hidden = p.dataset.tierPanel !== id;
+    });
+    // Picking an option pre-fills the form, but never flips the form away
+    // from a unit enquiry the reader has already chosen.
+    if (!opts.fromForm && tierSelect && !tierSelect.disabled) {
+      tierSelect.value = id;
+      tierSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
+  tierTabs.forEach((tab) => {
+    tab.addEventListener("click", () => selectTier(tab.dataset.tierTab!));
+    tab.addEventListener("keydown", (e) => {
+      const i = tierTabs.indexOf(tab);
+      const rtl = document.documentElement.dir === "rtl";
+      let next = -1;
+      if (e.key === (rtl ? "ArrowLeft" : "ArrowRight") || e.key === "ArrowDown") next = (i + 1) % tierTabs.length;
+      if (e.key === (rtl ? "ArrowRight" : "ArrowLeft") || e.key === "ArrowUp") next = (i - 1 + tierTabs.length) % tierTabs.length;
+      if (e.key === "Home") next = 0;
+      if (e.key === "End") next = tierTabs.length - 1;
+      if (next >= 0) {
+        e.preventDefault();
+        selectTier(tierTabs[next]!.dataset.tierTab!, { focus: true });
+      }
+    });
+  });
+
+  tierSelect?.addEventListener("change", () => {
+    if (tierSelect.value) selectTier(tierSelect.value, { fromForm: true });
+  });
 </script>

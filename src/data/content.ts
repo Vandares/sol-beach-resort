@@ -120,11 +120,12 @@ type Dict = {
     alt: string;
     body: string;
     tiersLabel: string;
-    tiers: { name: string; capacity: string }[];
+    capacityLabel: string;
+    pointsLabel: string;
+    /** One entry per option on SOL's official membership sheets. */
+    tiers: { id: string; name: string; kind: string; capacity: string; points: string[] }[];
     unitsLabel: string;
     units: string[];
-    rulesLabel: string;
-    rules: string[];
     note: string;
     cta: string;
     secondary: string;
@@ -290,12 +291,65 @@ const en: Dict = {
     title: "Membership",
     alt: "العضوية",
     body: "SOL operates through an annual membership model to ensure privacy and consistency of experience. Membership represents belonging to a complete lifestyle.",
-    tiersLabel: "Membership options",
+    tiersLabel: "Choose an option",
+    capacityLabel: "Capacity",
+    pointsLabel: "How it works",
     tiers: [
-      { name: "Couples", capacity: "One gentleman and one lady" },
-      { name: "Ladies", capacity: "Two to four ladies" },
-      { name: "Solo", capacity: "One person" },
-      { name: "Weekdays Access", capacity: "One gentleman and one lady, or two ladies" },
+      {
+        id: "couples",
+        name: "Couples",
+        kind: "Membership",
+        capacity: "One gentleman and one lady only",
+        points: [
+          "Entry is through the guest entry office.",
+          "Show your membership with your ID to enter the resort.",
+          "Priority of entry, ahead of guests.",
+          "One upfront payment, plus a safety deposit.",
+        ],
+      },
+      {
+        id: "ladies",
+        name: "Ladies",
+        kind: "Membership",
+        capacity: "From two to four ladies",
+        points: [
+          "Entry is through the guest entry office.",
+          "Show your membership with your ID to enter the resort.",
+          "Priority of entry, ahead of guests.",
+          "One upfront payment, plus a safety deposit.",
+        ],
+      },
+      {
+        id: "solo",
+        name: "Solo",
+        kind: "Membership",
+        capacity: "One person only",
+        points: [
+          "Entry is through the guest entry office.",
+          "Show your membership with your ID to enter the resort.",
+          "Priority of entry, ahead of guests.",
+          "One upfront payment, plus a safety deposit.",
+        ],
+      },
+      {
+        id: "weekdays",
+        name: "Weekdays Access",
+        kind: "Membership",
+        capacity: "One gentleman and one lady, or two ladies",
+        points: [
+          "Entry is through the guest entry office.",
+          "Show your membership with your ID to enter the resort.",
+          "Priority of entry, ahead of guests.",
+          "One upfront payment, plus a safety deposit.",
+        ],
+      },
+      {
+        id: "family",
+        name: "Family Locker",
+        kind: "Locker",
+        capacity: "A husband, a wife and two children under twelve",
+        points: ["Show your membership with your ID to enter the resort."],
+      },
     ],
     unitsLabel: "Unit options",
     units: [
@@ -304,13 +358,6 @@ const en: Dict = {
       "One-Bedroom Apartment",
       "Grand Studio",
       "Executive Suite",
-    ],
-    rulesLabel: "How membership works",
-    rules: [
-      "Entry is through the guest entry office.",
-      "Members show their membership against ID on arrival.",
-      "Members enter ahead of guests.",
-      "One upfront payment, plus a refundable safety deposit.",
     ],
     note: "Applications are reviewed individually. Submitting one does not create a binding agreement.",
     cta: "Apply for Membership",
@@ -483,22 +530,68 @@ const ar: Dict = {
     title: "العضوية",
     alt: "Membership",
     body: "تعتمد سول نظام العضوية السنوية للحفاظ على خصوصية المجتمع وجودة التجربة. العضوية تعني الانتماء إلى أسلوب حياة متكامل.",
-    tiersLabel: "خيارات العضوية",
+    tiersLabel: "اختر نوع العضوية",
+    capacityLabel: "الطاقة الاستيعابية",
+    pointsLabel: "آلية العضوية",
     tiers: [
-      { name: "للأزواج", capacity: "سيد وسيدة" },
-      { name: "للسيدات", capacity: "من سيدتين إلى أربع سيدات" },
-      { name: "فردية", capacity: "شخص واحد" },
-      { name: "أيام الأسبوع", capacity: "سيد وسيدة، أو سيدتان" },
+      {
+        id: "couples",
+        name: "للأزواج",
+        kind: "عضوية",
+        capacity: "سيد وسيدة فقط",
+        points: [
+          "يتم الدخول عن طريق مكتب الزوار.",
+          "يشترط إبراز بطاقة العضوية ومطابقتها مع الهوية من أجل السماح بالدخول.",
+          "تكون الأولوية لهم بالدخول قبل الزوار.",
+          "تُدفع دفعة واحدة فقط، إضافة إلى مبلغ التأمين.",
+        ],
+      },
+      {
+        id: "ladies",
+        name: "للسيدات",
+        kind: "عضوية",
+        capacity: "من سيدتين إلى أربع سيدات",
+        points: [
+          "يتم الدخول عن طريق مكتب الزوار.",
+          "يشترط إبراز بطاقة العضوية ومطابقتها مع الهوية من أجل السماح بالدخول.",
+          "تكون الأولوية لهم بالدخول قبل الزوار.",
+          "تُدفع دفعة واحدة فقط، إضافة إلى مبلغ التأمين.",
+        ],
+      },
+      {
+        id: "solo",
+        name: "فردية",
+        kind: "عضوية",
+        capacity: "شخص واحد فقط",
+        points: [
+          "يتم الدخول عن طريق مكتب الزوار.",
+          "يشترط إبراز بطاقة العضوية ومطابقتها مع الهوية من أجل السماح بالدخول.",
+          "تكون الأولوية لهم بالدخول قبل الزوار.",
+          "تُدفع دفعة واحدة فقط، إضافة إلى مبلغ التأمين.",
+        ],
+      },
+      {
+        id: "weekdays",
+        name: "أيام الأسبوع",
+        kind: "عضوية",
+        capacity: "سيد وسيدة فقط، أو سيدتان",
+        points: [
+          "يتم الدخول عن طريق مكتب الزوار.",
+          "يشترط إبراز بطاقة العضوية ومطابقتها مع الهوية من أجل السماح بالدخول.",
+          "تكون الأولوية لهم بالدخول قبل الزوار.",
+          "تُدفع دفعة واحدة فقط، إضافة إلى مبلغ التأمين.",
+        ],
+      },
+      {
+        id: "family",
+        name: "لوكر العائلة",
+        kind: "لوكر",
+        capacity: "زوج وزوجة وطفلان دون سن الثانية عشرة",
+        points: ["يشترط إبراز بطاقة العضوية ومطابقتها مع الهوية من أجل السماح بالدخول."],
+      },
     ],
     unitsLabel: "خيارات الوحدات",
     units: ["فيلا", "شقة بغرفتي نوم", "شقة بغرفة نوم", "ستوديو جراند", "جناح تنفيذي"],
-    rulesLabel: "كيف تعمل العضوية",
-    rules: [
-      "يتم الدخول عن طريق مكتب الزوار.",
-      "يشترط إبراز بطاقة العضوية ومطابقتها مع الهوية عند الدخول.",
-      "تكون الأولوية للأعضاء بالدخول قبل الزوار.",
-      "تدفع دفعة واحدة، إضافة إلى مبلغ تأمين مسترد.",
-    ],
     note: "تُراجع الطلبات بشكل فردي، وتقديم الطلب لا يُنشئ اتفاقًا ملزمًا.",
     cta: "طلب العضوية",
     secondary: "اسأل سؤالًا",
