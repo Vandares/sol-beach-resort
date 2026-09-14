@@ -70,7 +70,6 @@ type Dict = {
   langSwitch: string;
   hero: {
     headline: string;
-    alt: string;
     lede: string;
     primary: string;
     secondary: string;
@@ -162,7 +161,6 @@ const en: Dict = {
   langSwitch: "العربية",
   hero: {
     headline: "Let your SOL shine as bright as the SUN",
-    alt: "دع سولك يشرق بلمعان الشمس",
     lede: "A private beachfront community on the Jeddah coast, established 2021.",
     primary: "Apply for Membership",
     secondary: "Explore SOL",
@@ -406,7 +404,6 @@ const ar: Dict = {
   langSwitch: "English",
   hero: {
     headline: "دع سولك يشرق بلمعان الشمس",
-    alt: "Let your SOL shine as bright as the SUN",
     lede: "منتجع شاطئي خاص على ساحل جدة، تأسس عام ٢٠٢١.",
     primary: "طلب العضوية",
     secondary: "اكتشف سول",

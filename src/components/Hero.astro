@@ -30,24 +30,22 @@ const c = t(locale);
     aria-hidden="true"
   ></div>
 
-  <!-- Entry order is the reading order: language mark, headline, promise,
-       action. Staggered with a custom property so the sequence stays in CSS. -->
+  <!-- Entry order is the reading order: headline, promise, action. Staggered
+       with a custom property so the sequence stays in CSS. -->
   <div class="shell w-full pb-16 pt-24 md:pb-24">
-    <p class="lockup__alt text-paper" data-hero style="--i:0">{c.hero.alt}</p>
-
     <h1
-      class="mt-4 max-w-[22ch] text-[clamp(2.3rem,5.4vw,4.4rem)] font-light leading-[1.06] tracking-[-0.025em] text-paper"
+      class="max-w-[22ch] text-[clamp(2.3rem,5.4vw,4.4rem)] font-light leading-[1.06] tracking-[-0.025em] text-paper"
       data-hero
-      style="--i:1"
+      style="--i:0"
     >
       {c.hero.headline}
     </h1>
 
-    <p class="mt-7 max-w-[46ch] text-[1.0625rem] font-light leading-relaxed text-paper/85" data-hero style="--i:2">
+    <p class="mt-7 max-w-[46ch] text-[1.0625rem] font-light leading-relaxed text-paper/85" data-hero style="--i:1">
       {c.hero.lede}
     </p>
 
-    <div class="mt-10 flex flex-wrap gap-3" data-hero style="--i:3">
+    <div class="mt-10 flex flex-wrap gap-3" data-hero style="--i:2">
       <a href="#membership" class="btn btn--light">{c.hero.primary}</a>
       <a href="#about" class="btn btn--ghost">{c.hero.secondary}</a>
     </div>
