@@ -48,7 +48,7 @@ export const FACILITY_IMAGES: Record<string, string> = {
  */
 export const UNITS = [
   { id: "villa", area: 110, shots: 3 },
-  { id: "two-bed", area: 85, shots: 3 },
+  { id: "two-bed", area: 85, shots: 2 },
   { id: "exec", area: 60, shots: 2 },
   { id: "grand", area: 46, shots: 2 },
   { id: "one-bed", area: 45, shots: 3 },
