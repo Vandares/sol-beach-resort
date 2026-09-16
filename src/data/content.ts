@@ -33,7 +33,7 @@ export const FACILITY_IMAGES: Record<string, string> = {
   pools: "pools-1",
   units: "units-2",
   salon: "salon-interior",
-  diwaniyah: "diwaniyah-lounge",
+  diwaniyah: "diwaniyah",
   gym: "gym-2",
   nightshift: "nightshift-2",
   padel: "padel-4",
