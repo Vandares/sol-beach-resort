@@ -279,6 +279,38 @@
     [data-header].is-stuck.text-paper { background-color: var(--color-night); }
   }
 
+  /* A bubble: a soft sphere with a highlight near its top edge, so it reads as
+     round rather than as a flat dot. Only transform and opacity animate, and
+     the layer sits behind the copy, so the text never has to fight it. */
+  .bubble {
+    position: absolute;
+    bottom: -10%;
+    inline-size: var(--size);
+    block-size: var(--size);
+    border-radius: 50%;
+    opacity: 0;
+    background:
+      radial-gradient(circle at 32% 28%, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.12) 42%, transparent 62%),
+      radial-gradient(circle at 50% 50%, rgb(196 233 244 / 0.28), rgb(150 210 230 / 0.06) 70%);
+    box-shadow: inset 0 0 0 1px rgb(220 245 255 / 0.22);
+    animation: bubble-rise var(--dur) linear var(--delay) infinite;
+  }
+
+  /* Rises the full height of the pinned stage, wandering sideways on the way
+     up, and swelling very slightly as the pressure drops. */
+  @keyframes bubble-rise {
+    0%   { transform: translate3d(0, 0, 0) scale(0.85); opacity: 0; }
+    12%  { opacity: var(--o); }
+    85%  { opacity: var(--o); }
+    100% { transform: translate3d(var(--drift), -112vh, 0) scale(1.1); opacity: 0; }
+  }
+
+  /* Motion is the whole point of a bubble, so under reduced motion there is
+     nothing worth keeping: the layer goes away entirely. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-descent-bubbles] { display: none; }
+  }
+
   /* The Azul descent animates a light ground into deep water, and its copy is
      light. Without JS that copy would sit on paper and vanish, so the section
      defaults to the deep ground and only starts light when the animation can

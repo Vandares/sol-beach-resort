@@ -10,6 +10,27 @@ const c = t(locale);
 const files = import.meta.glob<{ default: ImageMetadata }>("../assets/img/*.jpg", { eager: true });
 const pick = (n: string) => files[`../assets/img/${n}.jpg`]!.default;
 const tiles = ["azul-1", "azul-2", "azul-3", "azul-4"].map(pick);
+
+/**
+ * Bubbles. Drawn rather than pictured: sharp at any screen density, no asset to
+ * download, and free to tint. The spread is generated once at build time from a
+ * fixed seed, so every visitor gets the same composition and nothing has to be
+ * computed in the browser.
+ */
+let seed = 20260920;
+const rand = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+const bubbles = Array.from({ length: 26 }, () => {
+  const size = 4 + rand() * 16;          // px. A few large, mostly small.
+  return {
+    left: (rand() * 100).toFixed(2),
+    size: size.toFixed(1),
+    // Smaller bubbles rise more slowly, the way they do in water.
+    duration: (16 - size * 0.42 + rand() * 6).toFixed(1),
+    delay: (rand() * 14).toFixed(1),
+    drift: (rand() * 60 - 30).toFixed(0),  // px of sideways wander
+    opacity: (0.18 + rand() * 0.34).toFixed(2),
+  };
+});
 ---
 
 <!--
@@ -37,6 +58,16 @@ const tiles = ["azul-1", "azul-2", "azul-3", "azul-4"].map(pick);
         radial-gradient(120% 60% at 22% -10%, rgba(150,220,235,0.30), transparent 60%),
         radial-gradient(90% 50% at 78% -6%, rgba(120,200,220,0.20), transparent 55%);"
     ></div>
+
+    <!-- Bubbles, fading in with the water as the reader goes under. -->
+    <div class="pointer-events-none absolute inset-0 -z-10 opacity-0" data-descent-bubbles aria-hidden="true">
+      {bubbles.map((b) => (
+        <span
+          class="bubble"
+          style={`left:${b.left}%;--size:${b.size}px;--dur:${b.duration}s;--delay:${b.delay}s;--drift:${b.drift}px;--o:${b.opacity}`}
+        ></span>
+      ))}
+    </div>
 
     <div class="shell relative w-full">
       <!-- Surface line -->
@@ -124,6 +155,7 @@ const tiles = ["azul-1", "azul-2", "azul-3", "azul-4"].map(pick);
     const surface = root.querySelector<HTMLElement>("[data-descent-surface]")!;
     const deep = root.querySelector<HTMLElement>("[data-descent-deep]")!;
     const rays = root.querySelector<HTMLElement>("[data-descent-rays]")!;
+    const bubbles = root.querySelector<HTMLElement>("[data-descent-bubbles]")!;
     const depth = root.querySelector<HTMLElement>("[data-descent-depth]")!;
 
     // The header cannot observe an animated background, so the descent tells
@@ -174,6 +206,8 @@ const tiles = ["azul-1", "azul-2", "azul-3", "azul-4"].map(pick);
         .to(surface, { y: -110, opacity: 0, color: "#faf8f4", ease: "none", duration: 1.1 }, 0)
         .to(rays, { opacity: 1, ease: "none", duration: 0.9 }, 0.4)
         .to(rays, { opacity: 0.25, ease: "none", duration: 1.6 }, 1.6)
+        // Bubbles arrive once the water has closed overhead, and stay.
+        .to(bubbles, { opacity: 1, ease: "none", duration: 1.1 }, 0.7)
         .to(deep, { opacity: 1, y: 0, ease: "power2.out", duration: 1.2 }, 0.9)
         .to(
           counter,
