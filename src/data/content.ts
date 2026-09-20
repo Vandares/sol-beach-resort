@@ -90,6 +90,13 @@ type Dict = {
     hint: string;
     items: Record<string, { name: string; body: string }>;
   };
+  rides: {
+    title: string;
+    alt: string;
+    body: string;
+    points: string[];
+    caption: string;
+  };
   azul: {
     surface: string;
     title: string;
@@ -211,6 +218,17 @@ const en: Dict = {
       kids: { name: "Kids' Area", body: "Safe and engaging, so parents can be at ease." },
       kitchen: { name: "Sol Beach Kitchen", body: "Fourteen menus, from the morning table to the last cold drink." },
     },
+  },
+  rides: {
+    title: "Luxury In Every Ride",
+    alt: "التوصيل داخل المنتجع",
+    body: "Thirty five thousand square metres is a long walk in the sun. Our captains will take you anywhere inside SOL, so you arrive at the beach, the courts or the Kitchen exactly as fresh as when you set off.",
+    points: [
+      "Anywhere inside the resort",
+      "Captains on duty through the day",
+      "Wave one down, hop in",
+    ],
+    caption: "One of our captains, ready to go.",
   },
   azul: {
     surface: "Above the surface, SOL.",
@@ -454,6 +472,17 @@ const ar: Dict = {
       kids: { name: "ألعاب الأطفال", body: "مساحة آمنة وممتعة تمنح الأهل راحة وطمأنينة." },
       kitchen: { name: "مطبخ سول", body: "أربعة عشر قسمًا، من مائدة الصباح إلى آخر مشروب بارد." },
     },
+  },
+  rides: {
+    title: "رفاهية في كل توصيلة",
+    alt: "Luxury In Every Ride",
+    body: "خمسة وثلاثون ألف متر مربع مشي طويل تحت الشمس. كباتننا يوصلونك إلى أي مكان داخل سول، فتصل إلى الشاطئ أو الملاعب أو المطبخ بنفس النشاط الذي انطلقت به.",
+    points: [
+      "إلى أي مكان داخل المنتجع",
+      "الكباتن جاهزون طوال اليوم",
+      "لوّح للكابتن واركب",
+    ],
+    caption: "أحد كباتننا، جاهز للانطلاق.",
   },
   azul: {
     surface: "فوق السطح، سول.",
