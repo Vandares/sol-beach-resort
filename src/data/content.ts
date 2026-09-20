@@ -222,9 +222,9 @@ const en: Dict = {
   rides: {
     title: "Luxury In Every Ride",
     alt: "التوصيل داخل المنتجع",
-    body: "Thirty five thousand square metres is a long walk in the sun. Our captains will take you anywhere inside SOL, so you arrive at the beach, the courts or the Kitchen exactly as fresh as when you set off.",
+    body: "Thirty five thousand square metres is a long walk in the sun. Our captains carry you from the gate down to the beach, so you arrive exactly as fresh as when you set off.",
     points: [
-      "Anywhere inside the resort",
+      "From the gate to the beach",
       "Captains on duty through the day",
       "Wave one down, hop in",
     ],
@@ -476,9 +476,9 @@ const ar: Dict = {
   rides: {
     title: "رفاهية في كل توصيلة",
     alt: "Luxury In Every Ride",
-    body: "خمسة وثلاثون ألف متر مربع مشي طويل تحت الشمس. كباتننا يوصلونك إلى أي مكان داخل سول، فتصل إلى الشاطئ أو الملاعب أو المطبخ بنفس النشاط الذي انطلقت به.",
+    body: "خمسة وثلاثون ألف متر مربع مشي طويل تحت الشمس. كباتننا يوصلونك من البوابة إلى الشاطئ، فتصل بنفس النشاط الذي انطلقت به.",
     points: [
-      "إلى أي مكان داخل المنتجع",
+      "من البوابة إلى الشاطئ",
       "الكباتن جاهزون طوال اليوم",
       "لوّح للكابتن واركب",
     ],
