@@ -18,7 +18,7 @@ export const CONTACT = {
   instagram: "https://instagram.com/solbeachsa",
   tiktok: "https://tiktok.com/@solbeachsa",
   menu: "https://solmenu.vercel.app",
-  azul: "https://azul-diving-club.vercel.app",
+  azul: "https://azuldiving.sa",
   maps: "https://maps.google.com/?q=Sol+Beach+Resort+Jeddah",
   plusCode: "P3M9+WV",
   rating: "4.3",
